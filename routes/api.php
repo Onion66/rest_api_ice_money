@@ -33,6 +33,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('transactions', [TransactionController::class, 'index']);
     Route::get('transactions/{id}', [TransactionController::class, 'show']);
+    Route::post('transactions/add', [TransactionController::class, 'store']);
+    Route::post('transactions/update', [TransactionController::class, 'update']);
 
     Route::get('category-transactions', [CategoryTransactionController::class, 'index']);
     Route::get('category-transactions/{id}', [CategoryTransactionController::class, 'show']);
