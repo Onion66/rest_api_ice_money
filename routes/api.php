@@ -32,3 +32,6 @@ Route::post('category-transactions/delete', [CategoryTransactionController::clas
 
 Route::get('payment-methods', [PaymentMethodController::class, 'index']);
 Route::get('payment-methods/{id}', [PaymentMethodController::class, 'show']);
+Route::post('payment-methods/add', [PaymentMethodController::class, 'store']);
+Route::post('payment-methods/update', [PaymentMethodController::class, 'update']);
+Route::post('payment-methods/delete', [PaymentMethodController::class, 'destroy']);

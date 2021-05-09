@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentMethodController extends Controller
 {
@@ -37,7 +39,28 @@ class PaymentMethodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255']
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+                'message' => 'Validation Error',
+                'status' => 'Error'
+            ], 400);
+        }
+        $newId = $this->generateId();
+        $response = $this->createById($newId, $request->name);
+        if (!$response) {
+            return response()->json([
+                'message' => 'Database error',
+                'status' => 'Error',
+            ], 500);
+        }
+        return response()->json([
+            'message' => 'Data insert success',
+            'status' => 'Success'
+        ], 200);
     }
 
     /**
@@ -69,9 +92,30 @@ class PaymentMethodController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'string'],
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+                'message' => 'Validation Error',
+                'status' => 'Error'
+            ], 400);
+        }
+        $response = $this->updateById($request->id, $request->name);
+        if (!$response) {
+            return response()->json([
+                'message' => 'Data not found',
+                'status' => 'Error',
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Data update success',
+            'status' => 'Success'
+        ], 200);
     }
 
     /**
@@ -80,9 +124,29 @@ class PaymentMethodController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'string']
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+                'message' => 'Validation Error',
+                'status' => 'Error'
+            ], 400);
+        }
+        $response = $this->deleteById($request->id);
+        if (!$response) {
+            return response()->json([
+                'message' => 'Data not found',
+                'status' => 'Error',
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Data delete success',
+            'status' => 'Success'
+        ], 200);
     }
 
     public function getAll()
@@ -93,5 +157,48 @@ class PaymentMethodController extends Controller
     public function getById($id)
     {
         return PaymentMethod::where('id_payment_method', $id)->first();
+    }
+
+    public function createById($id, $name)
+    {
+        return PaymentMethod::create([
+            'id_payment_method' => $id,
+            'name' => $name,
+        ]);
+    }
+
+    public function deleteById($id)
+    {
+        $response = DB::table('payment_methods')->where('id_payment_method', $id)->delete();
+        return $response;
+    }
+
+    public function updateById($id, $name)
+    {
+        $response = DB::update("update payment_methods set name=? where id_payment_method=?", [
+            $name, $id
+        ]);
+        return $response;
+    }
+
+    private function generateId()
+    {
+        $latest = PaymentMethod::orderBy('id_payment_method', 'desc')->first();
+        if (!$latest) {
+            return 'PM0000000001';
+        }
+        $latestId = $latest['id_payment_method'];
+        $characterNum = 2;
+        $symbol = substr($latestId, 0, $characterNum);
+        $numStr = substr($latestId, $characterNum);
+        $numInt = (int) $numStr;
+        $numInt++;
+        $zeroCount = strlen($numStr) - strlen((string)$numInt);
+        $zeroStr = '';
+        while ($zeroCount) {
+            $zeroStr .= '0';
+            $zeroCount--;
+        }
+        return $symbol . $zeroStr . $numInt;
     }
 }

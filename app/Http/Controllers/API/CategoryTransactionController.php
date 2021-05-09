@@ -50,10 +50,7 @@ class CategoryTransactionController extends Controller
             ], 400);
         }
         $newId = $this->generateId();
-        $response = CategoryTransaction::create([
-            'id_category_transaction' => $newId,
-            'name' => $request->name,
-        ]);
+        $response = $this->createById($newId, $request->name);
         if (!$response) {
             return response()->json([
                 'message' => 'Database error',
@@ -160,6 +157,14 @@ class CategoryTransactionController extends Controller
     public function getById($id)
     {
         return CategoryTransaction::where('id_category_transaction', $id)->first();
+    }
+
+    public function createById($id, $name)
+    {
+        return CategoryTransaction::create([
+            'id_category_transaction' => $id,
+            'name' => $name,
+        ]);
     }
 
     public function deleteById($id)
