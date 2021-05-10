@@ -26,13 +26,13 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(43,	'2014_10_12_000000_create_users_table',	1),
-(44,	'2014_10_12_100000_create_password_resets_table',	1),
-(45,	'2019_08_19_000000_create_failed_jobs_table',	1),
-(46,	'2019_12_14_000001_create_personal_access_tokens_table',	1),
-(47,	'2021_05_09_132715_create_transactions_table',	1),
-(48,	'2021_05_09_133237_create_category_transactions_table',	1),
-(49,	'2021_05_09_133609_create_payment_methods_table',	1);
+(50,	'2014_10_12_000000_create_users_table',	1),
+(51,	'2014_10_12_100000_create_password_resets_table',	1),
+(52,	'2019_08_19_000000_create_failed_jobs_table',	1),
+(53,	'2019_12_14_000001_create_personal_access_tokens_table',	1),
+(54,	'2021_05_09_132715_create_transactions_table',	1),
+(55,	'2021_05_09_133237_create_category_transactions_table',	1),
+(56,	'2021_05_09_133609_create_payment_methods_table',	1);
 
 
 DROP TABLE IF EXISTS `payment_methods`;
@@ -56,7 +56,8 @@ CREATE TABLE `personal_access_tokens` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `personal_access_tokens_token_unique` (`token`)
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -90,4 +91,4 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- 2021-05-10 10:54:49
+-- 2021-05-10 12:37:57
